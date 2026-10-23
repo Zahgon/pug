@@ -1,15 +1,7 @@
 # Running Tests
 
-To run tests (with node.js installed) you must complete 2 steps.
-
-## 1 Install dependencies
+From the root of the repository:
 
 ```
-npm install
-```
-
-## 2 Run tests
-
-```
-npm test
+go test ./...
 ```

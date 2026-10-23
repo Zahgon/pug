@@ -2,40 +2,31 @@
 
 # Pug
 
-Full documentation is at [pugjs.org](https://pugjs.org/)
+Full documentation of the template language is at [pugjs.org](https://pugjs.org/)
 
-Pug is a high-performance template engine heavily influenced by [Haml](http://haml.info/)
-and implemented with JavaScript for [Node.js](http://nodejs.org) and browsers. For bug reports,
-feature requests and questions, [open an issue](https://github.com/pugjs/pug/issues/new).
-For discussion join the [chat room](https://gitter.im/pugjs/pug).
-
-You can test drive Pug online [here](https://pugjs.org/).
-
-[Professionally supported pug is now available](https://tidelift.com/subscription/pkg/npm-pug?utm_source=npm-pug&utm_medium=referral&utm_campaign=readme)
-
-[![Build Status](https://img.shields.io/github/workflow/status/pugjs/pug/Test/master?style=for-the-badge)](https://github.com/pugjs/pug/actions?query=workflow%3ATest+branch%3Amaster)
-[![Rolling Versions](https://img.shields.io/badge/Rolling%20Versions-Enabled-brightgreen?style=for-the-badge)](https://rollingversions.com/pugjs/pug)
-[![NPM version](https://img.shields.io/npm/v/pug?style=for-the-badge)](https://www.npmjs.com/package/pug)
-[![Join Gitter Chat](https://img.shields.io/badge/gitter-join%20chat%20%E2%86%92-brightgreen.svg?style=for-the-badge)](https://gitter.im/pugjs/pug?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Pug is a high-performance template engine heavily influenced by [Haml](http://haml.info/). This repository
+implements it in Go: a module with the compiler packages and a `pug` command that renders template files with JSON
+locals. For bug reports, feature requests and questions, [open an issue](https://github.com/pugjs/pug/issues/new).
 
 ## Packages
 
-<!-- VERSION_TABLE -->
-Package Name | Version
--------------|--------
-pug | [![NPM version](https://img.shields.io/npm/v/pug?style=for-the-badge)](https://www.npmjs.com/package/pug)
-pug-attrs | [![NPM version](https://img.shields.io/npm/v/pug-attrs?style=for-the-badge)](https://www.npmjs.com/package/pug-attrs)
-pug-code-gen | [![NPM version](https://img.shields.io/npm/v/pug-code-gen?style=for-the-badge)](https://www.npmjs.com/package/pug-code-gen)
-pug-error | [![NPM version](https://img.shields.io/npm/v/pug-error?style=for-the-badge)](https://www.npmjs.com/package/pug-error)
-pug-filters | [![NPM version](https://img.shields.io/npm/v/pug-filters?style=for-the-badge)](https://www.npmjs.com/package/pug-filters)
-pug-lexer | [![NPM version](https://img.shields.io/npm/v/pug-lexer?style=for-the-badge)](https://www.npmjs.com/package/pug-lexer)
-pug-linker | [![NPM version](https://img.shields.io/npm/v/pug-linker?style=for-the-badge)](https://www.npmjs.com/package/pug-linker)
-pug-load | [![NPM version](https://img.shields.io/npm/v/pug-load?style=for-the-badge)](https://www.npmjs.com/package/pug-load)
-pug-parser | [![NPM version](https://img.shields.io/npm/v/pug-parser?style=for-the-badge)](https://www.npmjs.com/package/pug-parser)
-pug-runtime | [![NPM version](https://img.shields.io/npm/v/pug-runtime?style=for-the-badge)](https://www.npmjs.com/package/pug-runtime)
-pug-strip-comments | [![NPM version](https://img.shields.io/npm/v/pug-strip-comments?style=for-the-badge)](https://www.npmjs.com/package/pug-strip-comments)
-pug-walk | [![NPM version](https://img.shields.io/npm/v/pug-walk?style=for-the-badge)](https://www.npmjs.com/package/pug-walk)
-<!-- VERSION_TABLE -->
+The module `github.com/pugjs/pug` keeps the structure of the original packages; each directory keeps its licence.
+
+Directory | Go package | Role
+----------|------------|-----
+`packages/pug` | `pug` | compiles templates: `Compile`, `CompileFile`, `Template.Render`
+`packages/pug-lexer` | `lexer` | tokens, with line and column positions
+`packages/pug-parser` | `parser` | the syntax tree
+`packages/pug-load` | `load` | reads included and extended files
+`packages/pug-strip-comments` | `stripcomments` | drops unbuffered comments
+`packages/pug-filters` | `filters` | applies filters at compile time
+`packages/pug-linker` | `linker` | inheritance, blocks and includes
+`packages/pug-code-gen` | `codegen` | compiles and renders, including attribute compilation (formerly pug-attrs)
+`packages/pug-runtime` | `runtime` | escaping, attributes, classes, styles, merging and error context
+`packages/pug-walk` | `walk` | tree traversal
+`packages/pug-error` | `pugerror` | errors with source context
+`internal/js` | `js` | the JavaScript that templates evaluate: values, operators, built-in methods and JSON
+`cmd/pug` | `main` | the `pug` command
 
 ## Rename from "Jade"
 
@@ -47,31 +38,35 @@ Before the renaming, work had already begun on “Jade 2.0.0”. Therefore, the 
 
 The syntax of Pug has several differences, deprecations, and removals compared to its predecessor. These differences are documented in [#2305](https://github.com/pugjs/pug/issues/2305).
 
-The website and documentation for Pug are still being updated. But if you are new to Pug, you should get started with the new syntax and install the Pug package from npm.
+The website and documentation for Pug are still being updated. But if you are new to Pug, you should get started with the new syntax.
 
 ## Installation
 
-### Package
+Pug needs Go 1.23 or later and nothing beyond the standard library:
 
-To use Pug in your own JavaScript projects:
+    go build ./cmd/pug
 
-```bash
-$ npm install pug
-```
+## Command Line
 
-### Command Line
+    pug [flags] FILE
 
-After installing the latest version of [Node.js](http://nodejs.org), install with:
+Flag | Meaning
+-----|--------
+`-O, --obj FILE` | read the locals from a JSON file holding an object
+`-P, --pretty` | indent the output with two spaces
+`--indent STRING` | indent the output with STRING (whitespace only)
+`-D, --doctype NAME` | the default doctype
+`-b, --basedir DIR` | the root of absolute `include` and `extends` paths
+`--no-debug` | compile without debug information: runtime errors carry no template context
+`--self` | read the locals through the variable `self`
 
-```bash
-$ npm install pug-cli -g
-```
+The HTML goes to standard output. Template errors are written to standard error with their `PUG:` code, the
+file, line and column and the surrounding source lines (exit status 1); usage errors exit with status 2. The
+filters `cdata`, `upper`, `lower`, `wrap` and `length` are available to templates.
 
-and run with
-
-```bash
-$ pug --help
-```
+JavaScript in templates (code, interpolation, attribute values, conditions, loops and mixin arguments) is evaluated
+by the `js` package, which implements the expressions, statements and built-in methods that templates use, with the
+coercions, number formatting and error messages of JavaScript.
 
 ## Syntax
 
@@ -122,39 +117,21 @@ Pug transforms the above to:
 
 ## API
 
-For full API, see [pugjs.org/api/reference.html](https://pugjs.org/api/reference.html)
-
-```js
-var pug = require('pug');
-
-// compile
-var fn = pug.compile('string of pug', options);
-var html = fn(locals);
-
-// render
-var html = pug.render('string of pug', merge(options, locals));
-
-// renderFile
-var html = pug.renderFile('filename.pug', merge(options, locals));
+```go
+tmpl, err := pug.CompileFile("views/page.pug", pug.Options{Pretty: "  ", PrettySet: true, Basedir: "views"})
+if err != nil {
+	return err
+}
+html, err := tmpl.RenderJSON(`{"name": "Timothy"}`)
 ```
 
-### Options
+## Development
 
-- `filename` Used in exceptions, and required when using includes
-- `compileDebug` When `false` no debug instrumentation is compiled
-- `pretty` Add pretty-indentation whitespace to output _(`false` by default)_
+    go vet ./...
+    go test ./...
 
-## Browser Support
-
-The latest version of pug can be [downloaded for the browser in standalone form](https://pugjs.org/js/pug.js). It only supports the very latest browsers, though, and is a large file. It is recommended that you pre-compile your pug templates to JavaScript.
-
-To compile a template for use on the client using the command line, do:
-
-```bash
-$ pug --client --no-debug filename.pug
-```
-
-which will produce `filename.js` containing the compiled template.
+The tests render the fixtures under `packages/pug/test` (cases, anti-cases and regressions) and compare the lexer
+with the recorded token snapshots of `packages/pug-lexer/test`.
 
 ## Tutorials
 

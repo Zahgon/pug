@@ -1,24 +1,24 @@
 name: Test
-
 on:
-  pull_request:
+  push:
     branches:
       - master
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
-
+        go-version: ['1.23.x', 'stable']
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: yarn install --frozen-lockfile
-      - run: yarn prettier:check
-      - run: yarn test
+          go-version: ${{ matrix.go-version }}
+      - run: test -z "$(gofmt -l .)"
+      - run: go vet ./...
+      - run: go test ./...

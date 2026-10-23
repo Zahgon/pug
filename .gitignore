@@ -2,7 +2,6 @@
 .idea
 .vscode
 testing
-node_modules
 lib-cov
 coverage
 cov-pt*
@@ -17,7 +16,7 @@ cov-pt*
 **/test/output*
 **/test/temp
 .release.json
-package-lock.json
 
 scripts/tsconfig.json
 packages/pug-error/lib
+/pug

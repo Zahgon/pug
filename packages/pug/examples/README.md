@@ -1,5 +1,3 @@
-The examples in this directory can be run simply by something like. 
+The examples in this directory can be rendered with the `pug` command, for example:
 
-    node attributes.js
-
-You can also open `browser.html` in a browser.
+    go run ./cmd/pug packages/pug/examples/attributes.pug
